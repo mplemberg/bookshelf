@@ -1,42 +1,54 @@
 /** @jsx jsx */
 import {jsx} from '@emotion/core'
 
-import './bootstrap'
+import * as React from 'react'
 import Tooltip from '@reach/tooltip'
-import {FaSearch} from 'react-icons/fa'
+import {FaSearch, FaTimes} from 'react-icons/fa'
 import {Input, BookListUL, Spinner} from './components/lib'
 import {BookRow} from './components/book-row'
-// 🐨 import the client from './utils/api-client'
-import {client} from 'utils/api-client'
-import {useEffect, useState} from 'react'
+import {client} from './utils/api-client'
+import * as colors from './styles/colors'
 
 function DiscoverBooksScreen() {
-  // 🐨 add state for status ('idle', 'loading', or 'success'), data, and query
-  const [status, setStatus] = useState('idle')
-  const [data, setData] = useState([])
-  const [query, setQuery] = useState('')
-  const [queried, setQueried] = useState(false)
-
-  useEffect(() => {
-    if (queried) {
-      client(`books?query=${encodeURIComponent(query)}`).then(data => {
-        setData(data)
-        setStatus('success')
-        setQueried(false)
-      })
-    }
-  }, [queried, query])
+  const [status, setStatus] = React.useState('idle')
+  const [data, setData] = React.useState(null)
+  const [query, setQuery] = React.useState('')
+  const [queried, setQueried] = React.useState(false)
+  const [error, setError] = React.useState(null)
 
   const isLoading = status === 'loading'
   const isSuccess = status === 'success'
+  const isError = status === 'error'
+  React.useEffect(() => {
+    if (!queried) {
+      return
+    }
+    setStatus('loading')
+    client(`books?query=${encodeURIComponent(query)}`)
+      .then(responseData => {
+        setData(responseData)
+        setStatus('success')
+      })
+      .catch(error => {
+        setError(error)
+        setStatus('error')
+      })
+  }, [query, queried])
 
   function handleSearchSubmit(event) {
     event.preventDefault()
-    setStatus('loading')
-    setQuery(event.target.search.value)
     setQueried(true)
+    setQuery(event.target.elements.search.value)
   }
 
+  function SearchIcon() {
+    let icon = <FaSearch aria-label="search" />
+    if (isLoading) icon = <Spinner />
+    else if (isError)
+      icon = <FaTimes aria-label="error" css={{color: colors.danger}} />
+
+    return icon
+  }
   return (
     <div
       css={{maxWidth: 800, margin: 'auto', width: '90vw', padding: '40px 0'}}
@@ -58,11 +70,18 @@ function DiscoverBooksScreen() {
                 background: 'transparent',
               }}
             >
-              {isLoading ? <Spinner /> : <FaSearch aria-label="search" />}
+              <SearchIcon />
             </button>
           </label>
         </Tooltip>
       </form>
+
+      {isError ? (
+        <div css={{color: colors.danger}}>
+          <p>There was an error:</p>
+          <pre>{error.message}</pre>
+        </div>
+      ) : null}
 
       {isSuccess ? (
         data?.books?.length ? (

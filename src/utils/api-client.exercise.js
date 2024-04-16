@@ -1,14 +1,20 @@
-async function client(endpoint, customConfig = {}) {
-  const url = `${process.env.REACT_APP_API_URL}/${endpoint}`
-  // 🐨 create the config you'll pass to window.fetch
-  //    make the method default to "GET"
+function client(endpoint, customConfig = {}) {
   const config = {
     method: 'GET',
     ...customConfig,
   }
 
-  const response = await fetch(url, config)
-  return await response.json()
+  return window
+    .fetch(`${process.env.REACT_APP_API_URL}/${endpoint}`, config)
+    .then(response => {
+      if (response.ok) {
+        return response.json()
+      } else {
+        return response.json().then(data => {
+          return Promise.reject(data)
+        })
+      }
+    })
 }
 
 export {client}
