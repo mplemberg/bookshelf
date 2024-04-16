@@ -8,32 +8,21 @@ import {Input, BookListUL, Spinner} from './components/lib'
 import {BookRow} from './components/book-row'
 import {client} from './utils/api-client'
 import * as colors from './styles/colors'
+import {useAsync} from 'utils/hooks'
 
 function DiscoverBooksScreen() {
-  const [status, setStatus] = React.useState('idle')
-  const [data, setData] = React.useState(null)
-  const [query, setQuery] = React.useState('')
+  const [query, setQuery] = React.useState()
   const [queried, setQueried] = React.useState(false)
-  const [error, setError] = React.useState(null)
 
-  const isLoading = status === 'loading'
-  const isSuccess = status === 'success'
-  const isError = status === 'error'
+  const {data, error, run, isLoading, isError, isSuccess} = useAsync()
+
+  // in an event handler/effect/wherever
   React.useEffect(() => {
     if (!queried) {
       return
     }
-    setStatus('loading')
-    client(`books?query=${encodeURIComponent(query)}`)
-      .then(responseData => {
-        setData(responseData)
-        setStatus('success')
-      })
-      .catch(error => {
-        setError(error)
-        setStatus('error')
-      })
-  }, [query, queried])
+    run(client(`books?query=${encodeURIComponent(query)}`))
+  }, [query, queried, run])
 
   function handleSearchSubmit(event) {
     event.preventDefault()
@@ -41,14 +30,6 @@ function DiscoverBooksScreen() {
     setQuery(event.target.elements.search.value)
   }
 
-  function SearchIcon() {
-    let icon = <FaSearch aria-label="search" />
-    if (isLoading) icon = <Spinner />
-    else if (isError)
-      icon = <FaTimes aria-label="error" css={{color: colors.danger}} />
-
-    return icon
-  }
   return (
     <div
       css={{maxWidth: 800, margin: 'auto', width: '90vw', padding: '40px 0'}}
@@ -70,7 +51,13 @@ function DiscoverBooksScreen() {
                 background: 'transparent',
               }}
             >
-              <SearchIcon />
+              {isLoading ? (
+                <Spinner />
+              ) : isError ? (
+                <FaTimes aria-label="error" css={{color: colors.danger}} />
+              ) : (
+                <FaSearch aria-label="search" />
+              )}
             </button>
           </label>
         </Tooltip>
