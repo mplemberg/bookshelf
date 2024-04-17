@@ -2,13 +2,11 @@
 import {jsx} from '@emotion/core'
 
 import * as React from 'react'
-// we need to get the "bookId" param from the router
-// 🐨 import the useParams hook from 'react-router-dom'
+import {useParams} from 'react-router-dom'
 import {client} from 'utils/api-client'
 import * as mq from 'styles/media-queries'
 import {useAsync} from 'utils/hooks'
 import bookPlaceholderSvg from 'assets/book-placeholder.svg'
-import {useParams} from 'react-router'
 
 const loadingBook = {
   title: 'Loading...',
