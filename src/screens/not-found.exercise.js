@@ -6,7 +6,7 @@ import {jsx} from '@emotion/core'
 // 🐨 Import the Link from 'components/lib'
 // 💰 and feel free to take a peek at the implementation of that styled component
 // to be reminded how you can create styled components out of existing components
-
+import {Link} from 'components/lib'
 function NotFoundScreen() {
   return (
     <div
@@ -18,8 +18,7 @@ function NotFoundScreen() {
       }}
     >
       <div>
-        Sorry... nothing here.
-        {/* 🐨 add a <Link> here that says "Go home" and sends the user to "/discover" */}
+        Sorry... nothing here. <Link to="/discover">Go Home</Link>
       </div>
     </div>
   )

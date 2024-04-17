@@ -25,7 +25,7 @@ exercise:
 
 ```javascript
 import * as React from 'react'
-import ReactDOM from 'react-dom'
+import ReactDOM from 'react-do\m'
 import {
   BrowserRouter as Router,
   Routes,
