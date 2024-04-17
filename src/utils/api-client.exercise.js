@@ -6,6 +6,10 @@ function client(endpoint, customConfig = {}) {
     ...customConfig,
   }
 
+  if (customConfig.token) {
+    config.headers = {Authorization: `Bearer ${customConfig.token}`}
+  }
+
   return window.fetch(`${apiURL}/${endpoint}`, config).then(async response => {
     const data = await response.json()
     if (response.ok) {
