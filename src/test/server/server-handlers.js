@@ -43,6 +43,7 @@ const handlers = [
     try {
       user = await usersDB.authenticate(userFields)
     } catch (error) {
+      debugger
       return res(
         ctx.status(400),
         ctx.json({status: 400, message: error.message}),
