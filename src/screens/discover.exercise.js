@@ -13,8 +13,8 @@ function DiscoverBooksScreen() {
   const [query, setQuery] = React.useState('')
   const [queried, setQueried] = React.useState(false)
   const {books, error, status} = useBookSearch(query)
-
   const refetchBookSearchQuery = useRefetchBookSearchQuery()
+
   React.useEffect(() => {
     return () => refetchBookSearchQuery()
   }, [refetchBookSearchQuery])
