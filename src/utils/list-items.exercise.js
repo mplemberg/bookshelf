@@ -1,11 +1,11 @@
-import {useQuery} from 'react-query'
-import {client} from 'utils/api-client'
-import {queryCache, useMutation} from 'react-query'
+import {useQuery, useMutation, queryCache} from 'react-query'
+import {client} from './api-client'
+
 function useListItems(user) {
   const {data: listItems} = useQuery({
     queryKey: 'list-items',
     queryFn: () =>
-      client('list-items', {token: user.token}).then(data => data.listItems),
+      client(`list-items`, {token: user.token}).then(data => data.listItems),
   })
   return listItems ?? []
 }
@@ -18,6 +18,7 @@ function useListItem(user, bookId) {
 const defaultMutationOptions = {
   onSettled: () => queryCache.invalidateQueries('list-items'),
 }
+
 function useUpdateListItem(user) {
   return useMutation(
     updates =>
@@ -32,11 +33,7 @@ function useUpdateListItem(user) {
 
 function useRemoveListItem(user) {
   return useMutation(
-    ({id}) =>
-      client(`list-items/${id}`, {
-        method: 'DELETE',
-        token: user.token,
-      }),
+    ({id}) => client(`list-items/${id}`, {method: 'DELETE', token: user.token}),
     defaultMutationOptions,
   )
 }
@@ -49,8 +46,8 @@ function useCreateListItem(user) {
 }
 
 export {
-  useListItems,
   useListItem,
+  useListItems,
   useUpdateListItem,
   useRemoveListItem,
   useCreateListItem,

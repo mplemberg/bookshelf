@@ -13,9 +13,9 @@ function ListItemList({
 }) {
   const listItems = useListItems(user)
 
-  const filteredListItems = listItems?.filter(filterListItems)
+  const filteredListItems = listItems.filter(filterListItems)
 
-  if (!listItems?.length) {
+  if (!listItems.length) {
     return <div css={{marginTop: '1em', fontSize: '1.2em'}}>{noListItems}</div>
   }
   if (!filteredListItems.length) {

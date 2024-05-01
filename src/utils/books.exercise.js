@@ -1,5 +1,5 @@
 import {useQuery} from 'react-query'
-import {client} from 'utils/api-client'
+import {client} from './api-client'
 import bookPlaceholderSvg from 'assets/book-placeholder.svg'
 
 const loadingBook = {
@@ -10,6 +10,7 @@ const loadingBook = {
   synopsis: 'Loading...',
   loadingBook: true,
 }
+
 const loadingBooks = Array.from({length: 10}, (v, index) => ({
   id: `loading-book-${index}`,
   ...loadingBook,
@@ -29,8 +30,10 @@ function useBookSearch(query, user) {
 function useBook(bookId, user) {
   const {data} = useQuery({
     queryKey: ['book', {bookId}],
-    queryFn: () => client(`books/${bookId}`, {token: user.token}),
+    queryFn: () =>
+      client(`books/${bookId}`, {token: user.token}).then(data => data.book),
   })
-  return {book: data?.book ?? loadingBook}
+  return data ?? loadingBook
 }
-export {useBookSearch, useBook}
+
+export {useBook, useBookSearch}
